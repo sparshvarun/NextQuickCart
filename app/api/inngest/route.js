@@ -1,32 +1,15 @@
-import { NextResponse } from "next/server";
-import { inngest } from "@/config/inngest";
-import { 
-  syncUserCreation, 
-  syncUserDeletion, 
-  syncUserUpdation,
-  createUserOrder 
-} from "@/config/inngest";
 import { serve } from "inngest/next";
+import { inngest, syncUserCreation, syncUserDeletion, syncUserUpdation, createUserOrder } from "@/config/inngest";
 
-// Export handlers directly - simpler approach that often works better
-export const { GET, POST } = serve({
+// Create an API that serves your functions - note this should match your original approach
+export const { GET, POST, PUT } = serve({
   client: inngest,
   functions: [
     syncUserCreation,
-    syncUserDeletion,
     syncUserUpdation,
+    syncUserDeletion,
     createUserOrder
-  ]
+  ],
 });
 
-// Keep the OPTIONS handler for CORS preflight requests
-export function OPTIONS() {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    }
-  });
-}
+// No need for a separate OPTIONS handler as Inngest handles this internally
