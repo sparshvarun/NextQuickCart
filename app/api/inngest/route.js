@@ -1,8 +1,8 @@
 import { serve } from "inngest/next";
 import { inngest, syncUserCreation, syncUserDeletion, syncUserUpdation, createUserOrder } from "@/config/inngest";
+import { NextResponse } from "next/server";
 
-// Create an API that serves your functions - note this should match your original approach
-export const { GET, POST, PUT } = serve({
+export const { GET, POST } = serve({
   client: inngest,
   functions: [
     syncUserCreation,
@@ -12,4 +12,15 @@ export const { GET, POST, PUT } = serve({
   ],
 });
 
+// Add this OPTIONS handler for CORS/preflight and Inngest checks
+export function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization"
+    }
+  });
+}
 // No need for a separate OPTIONS handler as Inngest handles this internally
