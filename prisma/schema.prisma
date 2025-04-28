@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+  
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id // Uses Clerk user ID
+  name      String
+  email     String    @unique
+  imageUrl  String
+  cartItems Json      @default("{}")
+  products  Product[]
+  orders    Order[]
+  addresses Address[]
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  userId      String
+  name        String
+  description String
+  price       Float
+  offerPrice  Float
+  image       String[]
+  category    String
+  date        DateTime    @default(now())
+  user        User        @relation(fields: [userId], references: [id])
+  orderItems  OrderItem[]
+}
+
+model Address {
+  id          String  @id @default(cuid())
+  userId      String
+  fullName    String
+  phoneNumber String
+  pincode     Int
+  area        String
+  city        String
+  state       String
+  user        User    @relation(fields: [userId], references: [id])
+  orders      Order[]
+}
+
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  amount    Float
+  addressId String
+  status    String      @default("Order Placed")
+  date      DateTime    @default(now())
+  user      User        @relation(fields: [userId], references: [id])
+  address   Address     @relation(fields: [addressId], references: [id])
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  @@unique([orderId, productId])
+}
