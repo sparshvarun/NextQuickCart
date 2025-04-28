@@ -7,6 +7,7 @@
     "postinstall": "prisma generate && prisma migrate deploy",
     "start": "next start",
     "lint": "next lint",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "build": "DISABLE_ESLINT_PLUGIN=true prisma generate && next build"
   },
   "dependencies": {
