@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { serve } from "inngest/next";
 import { inngest } from "@/config/inngest";
 import { 
   syncUserCreation, 
@@ -7,9 +6,10 @@ import {
   syncUserUpdation,
   createUserOrder 
 } from "@/config/inngest";
+import { serve } from "inngest/next";
 
-// Create handlers with wrapped responses
-const handlers = serve({
+// Export handlers directly - simpler approach that often works better
+export const { GET, POST } = serve({
   client: inngest,
   functions: [
     syncUserCreation,
@@ -19,32 +19,8 @@ const handlers = serve({
   ]
 });
 
-// Add CORS headers to help with connectivity
-export async function GET(req) {
-  const res = await handlers.GET(req);
-  return new NextResponse(res.body, {
-    status: res.status,
-    headers: {
-      ...Object.fromEntries(res.headers),
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    }
-  });
-}
-
-export async function POST(req) {
-  const res = await handlers.POST(req);
-  return new NextResponse(res.body, {
-    status: res.status,
-    headers: {
-      ...Object.fromEntries(res.headers),
-      'Access-Control-Allow-Origin': '*'
-    }
-  });
-}
-
-export async function OPTIONS() {
+// Keep the OPTIONS handler for CORS preflight requests
+export function OPTIONS() {
   return new NextResponse(null, {
     status: 200,
     headers: {

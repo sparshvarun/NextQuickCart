@@ -1,8 +1,12 @@
 import { Inngest } from "inngest";
 import prisma from "./db";
 
-// Create a client to send and receive events
-export const inngest = new Inngest({ id: "quickcart-next" });
+// Create a client to send and receive events with explicit keys
+export const inngest = new Inngest({ 
+  id: "quickcart-next",
+  eventKey: process.env.INNGEST_EVENT_KEY,
+  signingKey: process.env.INNGEST_SIGNING_KEY
+});
 
 // Inngest Function to save user data to a database
 export const syncUserCreation = inngest.createFunction(
